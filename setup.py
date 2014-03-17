@@ -8,9 +8,9 @@ setup(
     author='clowwindy',
     author_email='clowwindy42@gmail.com',
     url='https://github.com/clowwindy/json_to_model',
-    packages=['gfwlist2pac', 'gfwlist2pac'],
+    packages=['gfwlist2pac', 'gfwlist2pac.resources'],
     package_data={
-        'gfwlist2pac': ['LICENSE', 'templates/*']
+        'gfwlist2pac': ['LICENSE', 'resources/*']
     },
     install_requires=['setuptools'],
     entry_points="""
