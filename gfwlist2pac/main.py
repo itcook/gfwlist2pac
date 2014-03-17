@@ -13,11 +13,12 @@ __all__ = ['main']
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('-i', '--input', dest='input', required=True,
-                      help='path to gfwlist FILE', metavar='FILE')
+                      help='path to gfwlist', metavar='GFWLIST')
     parser.add_argument('-f', '--file', dest='output', required=True,
-                      help='path to output pac FILE', metavar='FILE')
+                      help='path to output pac', metavar='PAC')
     parser.add_argument('-p', '--proxy', dest='proxy', required=True,
-                        help='proxy parameter in the pac file', metavar='PROXY')
+                        help='the proxy parameter in the pac file, for example,\
+                        "SOCKS5 127.0.0.1:1080;"', metavar='PROXY')
     return parser.parse_args()
 
 
