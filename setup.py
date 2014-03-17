@@ -7,7 +7,7 @@ setup(
     description="convert gfwlist2pac to pac",
     author='clowwindy',
     author_email='clowwindy42@gmail.com',
-    url='https://github.com/clowwindy/json_to_model',
+    url='https://github.com/clowwindy/gfwlist2pac',
     packages=['gfwlist2pac', 'gfwlist2pac.resources'],
     package_data={
         'gfwlist2pac': ['LICENSE', 'resources/*']

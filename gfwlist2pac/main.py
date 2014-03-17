@@ -16,16 +16,19 @@ def parse_args():
                       help='path to output pac FILE', metavar='FILE')
     return parser.parse_args()
 
+
 def decode_gfwlist(content):
     # decode base64 if have to
     try:
         return content.decode('base64')
     except:
         return content
+
     
 def tlds():
     # return tld list
     pass
+
 
 def get_hostname(something):
     try:
@@ -38,6 +41,7 @@ def get_hostname(something):
         logging.error(e) 
         return None
 
+
 def add_domain_to_set(s, something):
     hostname = get_hostname(something)
     if hostname is not None:
@@ -47,6 +51,7 @@ def add_domain_to_set(s, something):
             hostname = hostname.rstrip('/')
         if hostname:
             s.add(hostname)
+
 
 def parse_gfwlist(content):
     gfwlist = content.splitlines(False)
@@ -74,6 +79,7 @@ def parse_gfwlist(content):
     # TODO: reduce ['www.google.com', 'google.com'] to ['google.com']
     return domains
 
+
 def join_pac(domains):
     # the entire tld list is too large. we'll output tlds only appeared in the domain list
     tld_content = pkgutil.get_data('resources', 'tld.txt')
@@ -85,6 +91,7 @@ def join_pac(domains):
             known_domain = '.'.join(domain_parts[len(domain_parts) - i - 1:])
             known_domains.add(known_domain)
     return tlds.intersection(known_domains)
+
 
 def generate_pac(domains):
     # 1. join tld list with domains appeared in domain list
@@ -102,7 +109,7 @@ def generate_pac(domains):
     return proxy_content
 
 
-if __name__ == '__main__':
+def main():
     args = parse_args()
     with open(args.input, 'rb') as f:
         content = f.read()
@@ -112,4 +119,8 @@ if __name__ == '__main__':
     with open(args.output, 'wb') as f:
         print pac_content
         f.write(pac_content)
-    
+        
+
+if __name__ == '__main__':
+    main()
+
