@@ -56,8 +56,9 @@ def add_domain_to_set(s, something):
 
 
 def parse_gfwlist(content):
+    builtin_rules = pkgutil.get_data('resources', 'builtin.txt').splitlines(False)
     gfwlist = content.splitlines(False)
-    domains = set(['google.com', 'wikipedia.org'])
+    domains = set(builtin_rules)
     for line in gfwlist:
         if line.find('.*') >= 0:
             continue
@@ -117,6 +118,7 @@ def main():
     with open(args.input, 'rb') as f:
         content = f.read()
     content = decode_gfwlist(content)
+    print content
     domains = parse_gfwlist(content)
     pac_content = generate_pac(domains, args.proxy)
     with open(args.output, 'wb') as f:

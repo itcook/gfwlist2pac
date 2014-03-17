@@ -1,0 +1,5 @@
+google.com
+google.co.jp
+google.co.hk
+github.com
+wikipedia.org

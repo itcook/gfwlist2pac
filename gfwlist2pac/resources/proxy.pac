@@ -17,15 +17,19 @@ var direct = 'DIRECT;';
 
 function FindProxyForURL(url, host) {
     var lastPos = 0;
-    var domain;
+    var domain = host;
     while(lastPos >= 0) {
-        domain = host.slice(host);
+        console.log(domain);
+        console.log(lastPos);
         if (domains[domain]) {
+            console.log(proxy);
             return proxy;
         } else if (tlds[url]) {
             break;
         }
         lastPos = host.indexOf('.', lastPos + 1);
+        domain = host.slice(lastPos + 1);
     }
+    console.log(direct);
     return direct;
 }
