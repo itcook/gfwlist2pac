@@ -5,6 +5,8 @@ GFWList2PAC
 
 Generate O(1) PAC file from gfwlist.
 
+    pip install gfwlist2pac
+
     usage: gfwlist2pac [-h] -i GFWLIST -f PAC -p PROXY
     
     optional arguments:
