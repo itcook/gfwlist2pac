@@ -7,6 +7,8 @@ import json
 import logging
 from argparse import ArgumentParser
 
+__all__ = ['main']
+
 
 def parse_args():
     parser = ArgumentParser()

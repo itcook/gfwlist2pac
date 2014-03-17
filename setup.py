@@ -12,10 +12,10 @@ setup(
     package_data={
         'gfwlist2pac': ['LICENSE', 'resources/*']
     },
-    install_requires=['setuptools'],
+    install_requires=[],
     entry_points="""
     [console_scripts]
-    gfwlist2pac = gfwlist2pac.main
+    gfwlist2pac = gfwlist2pac.main:main
     """,
     classifiers=[
         'License :: OSI Approved :: MIT License',
