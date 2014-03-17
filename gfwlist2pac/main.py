@@ -14,6 +14,8 @@ def parse_args():
                       help='path to gfwlist FILE', metavar='FILE')
     parser.add_argument('-f', '--file', dest='output', required=True,
                       help='path to output pac FILE', metavar='FILE')
+    parser.add_argument('-p', '--proxy', dest='proxy', required=True,
+                        help='proxy parameter in the pac file', metavar='PROXY')
     return parser.parse_args()
 
 
@@ -93,7 +95,7 @@ def join_pac(domains):
     return tlds.intersection(known_domains)
 
 
-def generate_pac(domains):
+def generate_pac(domains, proxy):
     # 1. join tld list with domains appeared in domain list
     # 2. render the pac file
     proxy_content = pkgutil.get_data('resources', 'proxy.pac')
@@ -104,6 +106,7 @@ def generate_pac(domains):
     domains_dict = {}
     for domain in domains:
         domains_dict[domain] = 1
+    proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
     proxy_content = proxy_content.replace('__TLDS__', json.dumps(tlds_dict, indent=2))
     proxy_content = proxy_content.replace('__DOMAINS__', json.dumps(domains_dict, indent=2))
     return proxy_content
@@ -115,7 +118,7 @@ def main():
         content = f.read()
     content = decode_gfwlist(content)
     domains = parse_gfwlist(content)
-    pac_content = generate_pac(domains)
+    pac_content = generate_pac(domains, args.proxy)
     with open(args.output, 'wb') as f:
         print pac_content
         f.write(pac_content)
