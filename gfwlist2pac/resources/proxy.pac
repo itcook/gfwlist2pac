@@ -8,7 +8,7 @@
 // http://publicsuffix.org/
 var tlds = __TLDS__;
 
-var domainDict = __DOMAINS__;
+var domains = __DOMAINS__;
 
 function FindProxyForURL(url, host) {
     // TODO
