@@ -26,11 +26,6 @@ def decode_gfwlist(content):
     except:
         return content
 
-    
-def tlds():
-    # return tld list
-    pass
-
 
 def get_hostname(something):
     try:
@@ -83,32 +78,13 @@ def parse_gfwlist(content):
     return domains
 
 
-def join_pac(domains):
-    # the entire tld list is too large. we'll output tlds only appeared in the domain list
-    tld_content = pkgutil.get_data('resources', 'tld.txt')
-    tlds = set(tld_content.splitlines(False))
-    known_domains = set()
-    for domain in domains:
-        domain_parts = domain.split('.')
-        for i in xrange(0, len(domain_parts)):
-            known_domain = '.'.join(domain_parts[len(domain_parts) - i - 1:])
-            known_domains.add(known_domain)
-    return tlds.intersection(known_domains)
-
-
 def generate_pac(domains, proxy):
-    # 1. join tld list with domains appeared in domain list
-    # 2. render the pac file
+    # render the pac file
     proxy_content = pkgutil.get_data('resources', 'proxy.pac')
-    tlds = join_pac(domains)
-    tlds_dict = {}
-    for tld in tlds:
-        tlds_dict[tld] = 1
     domains_dict = {}
     for domain in domains:
         domains_dict[domain] = 1
     proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
-    proxy_content = proxy_content.replace('__TLDS__', json.dumps(tlds_dict, indent=2))
     proxy_content = proxy_content.replace('__DOMAINS__', json.dumps(domains_dict, indent=2))
     return proxy_content
 
@@ -118,11 +94,9 @@ def main():
     with open(args.input, 'rb') as f:
         content = f.read()
     content = decode_gfwlist(content)
-    print content
     domains = parse_gfwlist(content)
     pac_content = generate_pac(domains, args.proxy)
     with open(args.output, 'wb') as f:
-        print pac_content
         f.write(pac_content)
         
 
