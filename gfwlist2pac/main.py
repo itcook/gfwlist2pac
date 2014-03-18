@@ -81,8 +81,31 @@ def parse_gfwlist(content, user_rule=None):
             add_domain_to_set(domains, line.lstrip('.'))
         else:
             add_domain_to_set(domains, line)
-    # TODO: reduce ['www.google.com', 'google.com'] to ['google.com']
     return domains
+
+def reduce_domains(domains):
+    # reduce 'www.google.com' to 'google.com'
+    # remove invalid domains
+    tld_content = pkgutil.get_data('gfwlist2pac', 'resources/tld.txt')
+    tlds = set(tld_content.splitlines(False))
+    new_domains = set()
+    for domain in domains:
+        domain_parts = domain.split('.')
+        last_root_domain = None
+        for i in xrange(0, len(domain_parts)):
+            root_domain = '.'.join(domain_parts[len(domain_parts) - i - 1:])
+            if i == 0:
+                if not tlds.__contains__(root_domain):
+                    # root_domain is not a valid tld
+                    break
+            last_root_domain = root_domain
+            if tlds.__contains__(root_domain):
+                continue
+            else:
+                break
+        if last_root_domain is not None:
+            new_domains.add(last_root_domain)
+    return new_domains
 
 
 def generate_pac(domains, proxy):
@@ -106,6 +129,7 @@ def main():
             user_rule = f.read()
     content = decode_gfwlist(content)
     domains = parse_gfwlist(content, user_rule)
+    domains = reduce_domains(domains)
     pac_content = generate_pac(domains, args.proxy)
     with open(args.output, 'wb') as f:
         f.write(pac_content)
