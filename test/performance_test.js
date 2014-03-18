@@ -702,4 +702,4 @@ for (var j = 0; j < 1000; j++) {
 
 var diff = process.hrtime(time);
 console.log('total: ' + (diff[0] * 1e3 + diff[1] * 1e-6) + 'ms');
-console.log('avg: ' + (diff[0] * 1e3 + diff[1] * 1e-6) / url.length + 'ns');
+console.log('avg: ' + (diff[0] * 1e3 + diff[1] * 1e-6) / urls.length + 'ns');
