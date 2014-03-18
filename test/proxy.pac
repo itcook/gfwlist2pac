@@ -231,7 +231,6 @@ var domains = {
   "packages.debian.org": 1, 
   "openid.net": 1, 
   "rangzen.org": 1, 
-  "fbcdn.net": 1, 
   "page2rss.com": 1, 
   "freedomhouse.org": 1, 
   "footwiball.com": 1, 
@@ -245,6 +244,7 @@ var domains = {
   "chinatimes.com": 1, 
   "gardennetworks.org": 1, 
   "njuice.com": 1, 
+  "allmovie.com": 1, 
   "hkhkhk.com": 1, 
   "whitebear.freebearblog.org": 1, 
   "puffstore.com": 1, 
@@ -879,7 +879,7 @@ var domains = {
   "news.cnyes.com": 1, 
   "chinayouth.org.hk": 1, 
   "twitiq.com": 1, 
-  "robustnessiskey.com": 1, 
+  "fbcdn.net": 1, 
   "noypf.com": 1, 
   "bloglines.com": 1, 
   "whydidyoubuymethat.com": 1, 
@@ -1093,6 +1093,7 @@ var domains = {
   "hrw.org": 1, 
   "onmoon.net": 1, 
   "ajaxplorer.info": 1, 
+  "userdefined.com": 1, 
   "caobian.info": 1, 
   "incredibox.fr": 1, 
   "twibbon.com": 1, 
@@ -1358,6 +1359,7 @@ var domains = {
   "multiupload.com": 1, 
   "greenvpn.net": 1, 
   "blog.usa.gov": 1, 
+  "robustnessiskey.com": 1, 
   "thedieline.com": 1, 
   "berlintwitterwall.com": 1, 
   "molihua.org": 1, 
@@ -1744,7 +1746,7 @@ var domains = {
   "rushbee.com": 1, 
   "sendspace.com": 1, 
   "proxomitron.info": 1, 
-  "allmovie.com": 1, 
+  "www.userdefined2.com": 1, 
   "google.com": 1, 
   "badassjs.com": 1, 
   "howtoforge.com": 1, 
@@ -2581,7 +2583,7 @@ var domains = {
   "1-apple.com.tw": 1
 };
 
-var proxy = "SOCKS5 127.0.0.1:1080;SOCKS 127.0.0.1:1080;DIRECT;";
+var proxy = "SOCKS5 127.0.0.1:1080";
 
 var direct = 'DIRECT;';
 

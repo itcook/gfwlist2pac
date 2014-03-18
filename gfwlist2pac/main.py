@@ -19,6 +19,8 @@ def parse_args():
     parser.add_argument('-p', '--proxy', dest='proxy', required=True,
                         help='the proxy parameter in the pac file, for example,\
                         "SOCKS5 127.0.0.1:1080;"', metavar='PROXY')
+    parser.add_argument('--user-rule', dest='user_rule',
+                        help='user rule file, which will be appended to gfwlist')
     return parser.parse_args()
 
 
@@ -53,9 +55,11 @@ def add_domain_to_set(s, something):
             s.add(hostname)
 
 
-def parse_gfwlist(content):
+def parse_gfwlist(content, user_rule=None):
     builtin_rules = pkgutil.get_data('gfwlist2pac', 'resources/builtin.txt').splitlines(False)
     gfwlist = content.splitlines(False)
+    if user_rule:
+        gfwlist.extend(user_rule.splitlines(False))
     domains = set(builtin_rules)
     for line in gfwlist:
         if line.find('.*') >= 0:
@@ -94,10 +98,14 @@ def generate_pac(domains, proxy):
 
 def main():
     args = parse_args()
+    user_rule = None
     with open(args.input, 'rb') as f:
         content = f.read()
+    if args.user_rule:
+        with open(args.user_rule, 'rb') as f:
+            user_rule = f.read()
     content = decode_gfwlist(content)
-    domains = parse_gfwlist(content)
+    domains = parse_gfwlist(content, user_rule)
     pac_content = generate_pac(domains, args.proxy)
     with open(args.output, 'wb') as f:
         f.write(pac_content)
