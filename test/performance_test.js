@@ -691,9 +691,17 @@ var urls = ['plus.google.com',
 'accounts.google.com',
 'www.gstatic.com'];
 
+var shExpMatch = function (test, exp){
+    // Dummy function for testing switchysharp pac.
+    // Any shExpMatch implementation could not be faster than this,
+    // which results in overestimated switchysharp pac performance.
+    return test == exp;
+};
+
+var repeat = 100;
 var time = process.hrtime();
 
-for (var j = 0; j < 1000; j++) {
+for (var j = 0; j < repeat; j++) {
     for (var i in urls) {
         var url = urls[i];
         FindProxyForURL(url, url);
@@ -702,4 +710,4 @@ for (var j = 0; j < 1000; j++) {
 
 var diff = process.hrtime(time);
 console.log('total: ' + (diff[0] * 1e3 + diff[1] * 1e-6) + 'ms');
-console.log('avg: ' + (diff[0] * 1e3 + diff[1] * 1e-6) / urls.length + 'ns');
+console.log('avg: ' + (diff[0] * 1e3 + diff[1] * 1e-6) * 1e3 / repeat / urls.length + 'ns');
