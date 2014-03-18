@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="gfwlist2pac",
-    version="1.0",
+    version="1.0.1",
     license='MIT',
     description="convert gfwlist2pac to pac",
     author='clowwindy',

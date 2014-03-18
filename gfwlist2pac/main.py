@@ -54,7 +54,7 @@ def add_domain_to_set(s, something):
 
 
 def parse_gfwlist(content):
-    builtin_rules = pkgutil.get_data('resources', 'builtin.txt').splitlines(False)
+    builtin_rules = pkgutil.get_data('gfwlist2pac', 'resources/builtin.txt').splitlines(False)
     gfwlist = content.splitlines(False)
     domains = set(builtin_rules)
     for line in gfwlist:
@@ -83,7 +83,7 @@ def parse_gfwlist(content):
 
 def generate_pac(domains, proxy):
     # render the pac file
-    proxy_content = pkgutil.get_data('resources', 'proxy.pac')
+    proxy_content = pkgutil.get_data('gfwlist2pac', 'resources/proxy.pac')
     domains_dict = {}
     for domain in domains:
         domains_dict[domain] = 1
