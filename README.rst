@@ -1,9 +1,11 @@
 GFWList2PAC
 ===========
 
-[![Build Status](https://travis-ci.org/clowwindy/gfwlist2pac.png?branch=master)](https://travis-ci.org/clowwindy/gfwlist2pac)
+|Build Status|
 
 Generate O(1) PAC file from gfwlist.
+
+::
 
     pip install gfwlist2pac
 
@@ -19,3 +21,6 @@ Generate O(1) PAC file from gfwlist.
                             "SOCKS5 127.0.0.1:1080;"
       --user-rule USER_RULE
                             user rule file, which will be appended to gfwlist
+
+.. |Build Status| image:: https://travis-ci.org/clowwindy/gfwlist2pac.png?branch=master
+   :target: https://travis-ci.org/clowwindy/gfwlist2pac

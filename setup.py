@@ -1,5 +1,8 @@
 from setuptools import setup
 
+with open('README.rst') as f:                                                                   
+    long_description = f.read()
+
 setup(
     name="gfwlist2pac",
     version="1.0.2",
@@ -10,7 +13,7 @@ setup(
     url='https://github.com/clowwindy/gfwlist2pac',
     packages=['gfwlist2pac', 'gfwlist2pac.resources'],
     package_data={
-        'gfwlist2pac': ['LICENSE', 'resources/*']
+        'gfwlist2pac': ['README.rst', 'LICENSE', 'resources/*']
     },
     install_requires=[],
     entry_points="""
@@ -23,4 +26,5 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ],
+    long_description=long_description,
 )
