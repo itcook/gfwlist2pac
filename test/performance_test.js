@@ -693,7 +693,7 @@ var urls = ['plus.google.com',
 
 var time = process.hrtime();
 
-for (var j = 0; j < 100; j++) {
+for (var j = 0; j < 1000; j++) {
     for (var i in urls) {
         var url = urls[i];
         FindProxyForURL(url, url);
@@ -702,3 +702,4 @@ for (var j = 0; j < 100; j++) {
 
 var diff = process.hrtime(time);
 console.log('total: ' + (diff[0] * 1e3 + diff[1] * 1e-6) + 'ms');
+console.log('avg: ' + (diff[0] * 1e3 + diff[1] * 1e-6) / url.length + 'ns');
