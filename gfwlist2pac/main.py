@@ -5,14 +5,18 @@ import pkgutil
 import urlparse
 import json
 import logging
+import urllib2
 from argparse import ArgumentParser
 
 __all__ = ['main']
 
 
+gfwlist_url = 'https://autoproxy-gfwlist.googlecode.com/svn/trunk/gfwlist.txt'
+
+
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument('-i', '--input', dest='input', required=True,
+    parser.add_argument('-i', '--input', dest='input', 
                       help='path to gfwlist', metavar='GFWLIST')
     parser.add_argument('-f', '--file', dest='output', required=True,
                       help='path to output pac', metavar='PAC')
@@ -122,11 +126,16 @@ def generate_pac(domains, proxy):
 def main():
     args = parse_args()
     user_rule = None
-    with open(args.input, 'rb') as f:
-        content = f.read()
+    if (args.input):
+        with open(args.input, 'rb') as f:
+            content = f.read()
+    else:
+        print 'Downloading gfwlist from %s' % gfwlist_url
+        content = urllib2.urlopen(gfwlist_url, timeout=10).read()
     if args.user_rule:
         with open(args.user_rule, 'rb') as f:
-            user_rule = f.read()
+            user_rule = f.read() 
+        
     content = decode_gfwlist(content)
     domains = parse_gfwlist(content, user_rule)
     domains = reduce_domains(domains)
