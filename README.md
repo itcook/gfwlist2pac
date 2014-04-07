@@ -7,7 +7,7 @@ Generate O(1) PAC file from gfwlist.
 
     pip install gfwlist2pac
     
-    usage: main.py [-h] [-i GFWLIST] -f PAC -p PROXY [--user-rule USER_RULE]
+    usage: gfwlist2pac [-h] [-i GFWLIST] -f PAC -p PROXY [--user-rule USER_RULE]
     
     optional arguments:
       -h, --help            show this help message and exit
