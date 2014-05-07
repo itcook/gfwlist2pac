@@ -8,13 +8,21 @@ var proxy = __PROXY__;
 var direct = 'DIRECT;';
 
 function FindProxyForURL(url, host) {
-    var lastPos;
-    do {
-        if (domains.hasOwnProperty(host)) {
+    var suffix;
+    var pos = host.lastIndexOf('.');
+    pos = host.lastIndexOf('.', pos - 1);
+    while(1) {
+        if (pos == -1) {
+            if (domains[host] == 1) {
+                return proxy;
+            } else {
+                return direct;
+            }
+        }
+        suffix = host.substring(pos + 1);
+        if (domains[suffix] == 1) {
             return proxy;
         }
-        lastPos = host.indexOf('.') + 1;
-        host = host.slice(lastPos);
-    } while (lastPos >= 1);
-    return direct;
+        pos = host.lastIndexOf('.', pos - 1);
+    }
 }
