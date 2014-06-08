@@ -1939,6 +1939,7 @@ var domains = {
   "idlcoyote.com": 1, 
   "ning.com": 1, 
   "libertytimes.com.tw": 1, 
+  "democrats.org": 1, 
   "orchidbbs.com": 1, 
   "china21.org": 1, 
   "bbcchinese.com": 1, 
@@ -2379,7 +2380,7 @@ var domains = {
   "mingpao.com": 1, 
   "crd-net.org": 1, 
   "hk": 1, 
-  "democrats.org": 1, 
+  "googleapis.com": 1, 
   "ydy.com": 1, 
   "bipic.net": 1, 
   "tibet.com": 1, 
@@ -2439,18 +2440,26 @@ var domains = {
   "1-apple.com.tw": 1
 };
 
-var proxy = "SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080; DIRECT;";
+var proxy = "SOCKS5 127.0.0.1:1080";
 
 var direct = 'DIRECT;';
 
 function FindProxyForURL(url, host) {
-    var lastPos;
-    do {
-        if (domains.hasOwnProperty(host)) {
+    var suffix;
+    var pos = host.lastIndexOf('.');
+    pos = host.lastIndexOf('.', pos - 1);
+    while(1) {
+        if (pos == -1) {
+            if (domains[host] == 1) {
+                return proxy;
+            } else {
+                return direct;
+            }
+        }
+        suffix = host.substring(pos + 1);
+        if (domains[suffix] == 1) {
             return proxy;
         }
-        lastPos = host.indexOf('.') + 1;
-        host = host.slice(lastPos);
-    } while (lastPos >= 1);
-    return direct;
+        pos = host.lastIndexOf('.', pos - 1);
+    }
 }
