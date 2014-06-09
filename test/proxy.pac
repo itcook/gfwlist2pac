@@ -2450,14 +2450,14 @@ function FindProxyForURL(url, host) {
     pos = host.lastIndexOf('.', pos - 1);
     while(1) {
         if (pos == -1) {
-            if (domains[host] == 1) {
+            if (domains.hasOwnProperty(host)) {
                 return proxy;
             } else {
                 return direct;
             }
         }
         suffix = host.substring(pos + 1);
-        if (domains[suffix] == 1) {
+        if (domains.hasOwnProperty(suffix)) {
             return proxy;
         }
         pos = host.lastIndexOf('.', pos - 1);
