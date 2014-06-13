@@ -5,7 +5,7 @@ with open('README.rst') as f:
 
 setup(
     name="gfwlist2pac",
-    version="1.0.5",
+    version="1.0.6",
     license='MIT',
     description="convert gfwlist2pac to pac",
     author='clowwindy',
