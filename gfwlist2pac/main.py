@@ -31,6 +31,8 @@ def parse_args():
 def decode_gfwlist(content):
     # decode base64 if have to
     try:
+        if '.' in content:
+            raise
         return content.decode('base64')
     except:
         return content
