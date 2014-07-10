@@ -16,7 +16,7 @@ gfwlist_url = 'https://autoproxy-gfwlist.googlecode.com/svn/trunk/gfwlist.txt'
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument('-i', '--input', dest='input', 
+    parser.add_argument('-i', '--input', dest='input',
                       help='path to gfwlist', metavar='GFWLIST')
     parser.add_argument('-f', '--file', dest='output', required=True,
                       help='path to output pac', metavar='PAC')
@@ -46,7 +46,7 @@ def get_hostname(something):
         r = urlparse.urlparse(something)
         return r.hostname
     except Exception as e:
-        logging.error(e) 
+        logging.error(e)
         return None
 
 
@@ -135,16 +135,23 @@ def main():
         print 'Downloading gfwlist from %s' % gfwlist_url
         content = urllib2.urlopen(gfwlist_url, timeout=10).read()
     if args.user_rule:
-        with open(args.user_rule, 'rb') as f:
-            user_rule = f.read() 
-        
+        userrule_parts = urlparse.urlsplit(args.user_rule)
+        if not userrule_parts.scheme or not userrule_parts.netloc:
+            # It's not an URL, deal it as local file
+            with open(args.user_rule, 'rb') as f:
+                user_rule = f.read()
+        else:
+            # Yeah, it's an URL, try to download it
+            print 'Downloading user rules file from %s' % args.user_rule
+            user_rule = urllib2.urlopen(args.user_rule, timeout=10).read()
+
     content = decode_gfwlist(content)
     domains = parse_gfwlist(content, user_rule)
     domains = reduce_domains(domains)
     pac_content = generate_pac(domains, args.proxy)
     with open(args.output, 'wb') as f:
         f.write(pac_content)
-        
+
 
 if __name__ == '__main__':
     main()
