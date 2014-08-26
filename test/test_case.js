@@ -23,3 +23,5 @@ console.assert('PROXY' == FindProxyForURL('http://www.userdefined.com/', 'www.us
 console.assert('DIRECT;' == FindProxyForURL('http://www.baidu.com', 'www.baidu.com'));
 console.assert('DIRECT;' == FindProxyForURL('http://www.youku.com', 'www.youku.com'));
 console.assert('DIRECT;' == FindProxyForURL('http://www.taobao.com', 'www.taobao.com'));
+console.assert('DIRECT;' == FindProxyForURL('http://www.baidu.com', '.com'));
+console.assert('DIRECT;' == FindProxyForURL('http://www.baidu.com', '.'));

@@ -14,7 +14,7 @@ function FindProxyForURL(url, host) {
     var pos = host.lastIndexOf('.');
     pos = host.lastIndexOf('.', pos - 1);
     while(1) {
-        if (pos == -1) {
+        if (pos <= 0) {
             if (hasOwnProperty.call(domains, host)) {
                 return proxy;
             } else {
