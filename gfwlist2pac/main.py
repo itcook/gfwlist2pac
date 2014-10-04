@@ -68,10 +68,17 @@ def parse_gfwlist(content, user_rule=None):
         gfwlist.extend(user_rule.splitlines(False))
     domains = set(builtin_rules)
     for line in gfwlist:
+        print line
         if line.find('.*') >= 0:
             continue
         elif line.find('*') >= 0:
             line = line.replace('*', '/')
+        if line.startswith('||'):
+            line = line.lstrip('||')
+        elif line.startswith('|'):
+            line = line.lstrip('|')
+        elif line.startswith('.'):
+            line = line.lstrip('.')
         if line.startswith('!'):
             continue
         elif line.startswith('['):
@@ -79,14 +86,7 @@ def parse_gfwlist(content, user_rule=None):
         elif line.startswith('@'):
             # ignore white list
             continue
-        elif line.startswith('||'):
-            add_domain_to_set(domains, line.lstrip('||'))
-        elif line.startswith('|'):
-            add_domain_to_set(domains, line.lstrip('|'))
-        elif line.startswith('.'):
-            add_domain_to_set(domains, line.lstrip('.'))
-        else:
-            add_domain_to_set(domains, line)
+        add_domain_to_set(domains, line)
     return domains
 
 def reduce_domains(domains):

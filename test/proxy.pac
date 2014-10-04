@@ -2267,7 +2267,6 @@ var domains = {
   "chrlawyers.hk": 1, 
   "pinoy-n.com": 1, 
   "girlbanker.com": 1, 
-  "!--isaacmao.com": 1, 
   "usacn.com": 1, 
   "privateinternetaccess.com": 1, 
   "hgseav.com": 1, 
