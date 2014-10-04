@@ -68,7 +68,6 @@ def parse_gfwlist(content, user_rule=None):
         gfwlist.extend(user_rule.splitlines(False))
     domains = set(builtin_rules)
     for line in gfwlist:
-        print line
         if line.find('.*') >= 0:
             continue
         elif line.find('*') >= 0:
