@@ -17,14 +17,16 @@ gfwlist_url = 'https://autoproxy-gfwlist.googlecode.com/svn/trunk/gfwlist.txt'
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('-i', '--input', dest='input',
-                      help='path to gfwlist', metavar='GFWLIST')
+                        help='path to gfwlist', metavar='GFWLIST')
     parser.add_argument('-f', '--file', dest='output', required=True,
-                      help='path to output pac', metavar='PAC')
+                        help='path to output pac', metavar='PAC')
     parser.add_argument('-p', '--proxy', dest='proxy', required=True,
-                        help='the proxy parameter in the pac file, for example,\
-                        "SOCKS5 127.0.0.1:1080;"', metavar='PROXY')
+                        help='the proxy parameter in the pac file, '
+                             'for example, "SOCKS5 127.0.0.1:1080;"',
+                        metavar='PROXY')
     parser.add_argument('--user-rule', dest='user_rule',
-                        help='user rule file, which will be appended to gfwlist')
+                        help='user rule file, which will be appended to'
+                             ' gfwlist')
     return parser.parse_args()
 
 
@@ -62,7 +64,8 @@ def add_domain_to_set(s, something):
 
 
 def parse_gfwlist(content, user_rule=None):
-    builtin_rules = pkgutil.get_data('gfwlist2pac', 'resources/builtin.txt').splitlines(False)
+    builtin_rules = pkgutil.get_data('gfwlist2pac',
+                                     'resources/builtin.txt').splitlines(False)
     gfwlist = content.splitlines(False)
     if user_rule:
         gfwlist.extend(user_rule.splitlines(False))
@@ -87,6 +90,7 @@ def parse_gfwlist(content, user_rule=None):
             continue
         add_domain_to_set(domains, line)
     return domains
+
 
 def reduce_domains(domains):
     # reduce 'www.google.com' to 'google.com'
@@ -120,7 +124,8 @@ def generate_pac(domains, proxy):
     for domain in domains:
         domains_dict[domain] = 1
     proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
-    proxy_content = proxy_content.replace('__DOMAINS__', json.dumps(domains_dict, indent=2))
+    proxy_content = proxy_content.replace('__DOMAINS__',
+                                          json.dumps(domains_dict, indent=2))
     return proxy_content
 
 
@@ -154,4 +159,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

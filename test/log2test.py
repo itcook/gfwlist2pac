@@ -6,4 +6,3 @@ with open('1000.log', 'rb') as f:
         m = re.findall('connecting (.*?):', line)
         if m:
             print m[0]
-
