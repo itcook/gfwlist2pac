@@ -1,6 +1,8 @@
 google.com
 google.co.jp
 google.co.hk
+bbc.co.uk
 googleapis.com
+googlesyndication.com
 github.com
 wikipedia.org
