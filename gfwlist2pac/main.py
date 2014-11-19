@@ -27,6 +27,9 @@ def parse_args():
     parser.add_argument('--user-rule', dest='user_rule',
                         help='user rule file, which will be appended to'
                              ' gfwlist')
+    parser.add_argument('--precise', dest='precise', action='store_true',
+                        help='use adblock plus algorithm instead of O(1)'
+                             ' lookup')
     return parser.parse_args()
 
 
@@ -63,13 +66,18 @@ def add_domain_to_set(s, something):
             s.add(hostname)
 
 
-def parse_gfwlist(content, user_rule=None):
+def combine_lists(content, user_rule=None):
     builtin_rules = pkgutil.get_data('gfwlist2pac',
                                      'resources/builtin.txt').splitlines(False)
     gfwlist = content.splitlines(False)
+    gfwlist.extend(builtin_rules)
     if user_rule:
         gfwlist.extend(user_rule.splitlines(False))
-    domains = set(builtin_rules)
+    return gfwlist
+
+
+def parse_gfwlist(gfwlist):
+    domains = set()
     for line in gfwlist:
         if line.find('.*') >= 0:
             continue
@@ -117,7 +125,7 @@ def reduce_domains(domains):
     return new_domains
 
 
-def generate_pac(domains, proxy):
+def generate_pac_fast(domains, proxy):
     # render the pac file
     proxy_content = pkgutil.get_data('gfwlist2pac', 'resources/proxy.pac')
     domains_dict = {}
@@ -126,6 +134,24 @@ def generate_pac(domains, proxy):
     proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
     proxy_content = proxy_content.replace('__DOMAINS__',
                                           json.dumps(domains_dict, indent=2))
+    return proxy_content
+
+
+def generate_pac_precise(rules, proxy):
+    def grep_rule(rule):
+        if rule:
+            if rule.startswith('!'):
+                return None
+            if rule.startswith('['):
+                return None
+            return rule
+        return None
+    # render the pac file
+    proxy_content = pkgutil.get_data('gfwlist2pac', 'resources/abp.js')
+    rules = filter(grep_rule, rules)
+    proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
+    proxy_content = proxy_content.replace('__RULES__',
+                                          json.dumps(rules, indent=2))
     return proxy_content
 
 
@@ -150,9 +176,13 @@ def main():
             user_rule = urllib2.urlopen(args.user_rule, timeout=10).read()
 
     content = decode_gfwlist(content)
-    domains = parse_gfwlist(content, user_rule)
-    domains = reduce_domains(domains)
-    pac_content = generate_pac(domains, args.proxy)
+    gfwlist = combine_lists(content, user_rule)
+    if args.precise:
+        pac_content = generate_pac_precise(gfwlist, args.proxy)
+    else:
+        domains = parse_gfwlist(gfwlist)
+        domains = reduce_domains(domains)
+        pac_content = generate_pac_fast(domains, args.proxy)
     with open(args.output, 'wb') as f:
         f.write(pac_content)
 
