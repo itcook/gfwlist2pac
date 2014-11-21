@@ -3,13 +3,12 @@ GFWList2PAC
 
 [![PyPI version]][PyPI] [![Build Status]][Travis CI]
 
-Generate fast PAC file from gfwlist.
+Generate fast PAC file from gfwlist. Examples: [fast mode] / [precise mode].
 
 Fast mode: use O(1) domain lookup
 
 Precise mode: use adblock plus engine
 
-Examples of generated PAC file are here: [fast mode] / [precise mode].
 
 ### Usage
 
