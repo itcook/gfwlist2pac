@@ -3879,6 +3879,29 @@ function getOwnPropertyDescriptor(obj, key)
     return null;
 }
 
+function extend(subclass, superclass, definition)
+{
+    if (Object.__proto__)
+    {
+        definition.__proto__ = superclass.prototype;
+        subclass.prototype = definition;
+    }
+    else
+    {
+        var tmpclass = function(){}, ret;
+        tmpclass.prototype = superclass.prototype;
+        subclass.prototype = new tmpclass();
+        subclass.prototype.constructor = superclass;
+        for (var i in definition)
+        {
+            if (definition.hasOwnProperty(i))
+            {
+                subclass.prototype[i] = definition[i];
+            }
+        }
+    }
+}
+
 function Filter(text)
 {
     this.text = text;
@@ -3903,12 +3926,7 @@ Filter.fromText = function(text)
         return Filter.knownFilters[text];
     }
     var ret;
-    var match = text.indexOf("#") >= 0 ? Filter.elemhideRegExp.exec(text) : null;
-    if (match)
-    {
-        ret = ElemHideBase.fromText(text, match[1], match[2], match[3], match[4], match[5]);
-    }
-    else if (text[0] == "!")
+    if (text[0] == "!")
     {
         ret = new CommentFilter(text);
     }
@@ -3925,27 +3943,23 @@ function InvalidFilter(text, reason)
     Filter.call(this, text);
     this.reason = reason;
 }
-InvalidFilter.prototype = {
-    __proto__: Filter.prototype,
-    reason: null,
-};
+extend(InvalidFilter, Filter, {
+    reason: null
+});
 
 function CommentFilter(text)
 {
     Filter.call(this, text);
 }
-CommentFilter.prototype = {
-    __proto__: Filter.prototype,
-};
+extend(CommentFilter, Filter, {
+});
 
 function ActiveFilter(text, domains)
 {
     Filter.call(this, text);
     this.domainSource = domains;
 }
-ActiveFilter.prototype = {
-    __proto__: Filter.prototype,
-
+extend(ActiveFilter, Filter, {
     domainSource: null,
     domainSeparator: null,
     ignoreTrailingDot: true,
@@ -3968,10 +3982,8 @@ ActiveFilter.prototype = {
             var list = source.split(this.domainSeparator);
             if (list.length == 1 && list[0][0] != "~")
             {
-                domains = {
-                    __proto__: null,
-                    "": false
-                };
+                domains = createDict();
+                domains[""] = false;
                 if (this.ignoreTrailingDot)
                 {
                     list[0] = list[0].replace(/\.+$/, "");
@@ -4070,7 +4082,7 @@ ActiveFilter.prototype = {
         }
         return true;
     }
-};
+});
 
 function RegExpFilter(text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys)
 {
@@ -4101,8 +4113,7 @@ function RegExpFilter(text, regexpSource, contentType, matchCase, domains, third
         this.regexpSource = regexpSource;
     }
 }
-RegExpFilter.prototype = {
-    __proto__: ActiveFilter.prototype,
+extend(RegExpFilter, ActiveFilter, {
     domainSourceIsUpperCase: true,
     length: 1,
     domainSeparator: "|",
@@ -4147,7 +4158,7 @@ RegExpFilter.prototype = {
         }
         return false;
     }
-};
+});
 RegExpFilter.prototype["0"] = "#this";
 RegExpFilter.fromText = function(text)
 {
@@ -4285,111 +4296,16 @@ function BlockingFilter(text, regexpSource, contentType, matchCase, domains, thi
     RegExpFilter.call(this, text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys);
     this.collapse = collapse;
 }
-BlockingFilter.prototype = {
-    __proto__: RegExpFilter.prototype,
+extend(BlockingFilter, RegExpFilter, {
     collapse: null
-};
+});
 
 function WhitelistFilter(text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys)
 {
     RegExpFilter.call(this, text, regexpSource, contentType, matchCase, domains, thirdParty, sitekeys);
 }
-WhitelistFilter.prototype = {
-    __proto__: RegExpFilter.prototype
-};
-
-function ElemHideBase(text, domains, selector)
-{
-    ActiveFilter.call(this, text, domains || null);
-    if (domains)
-    {
-        this.selectorDomain = domains.replace(/,~[^,]+/g, "").replace(/^~[^,]+,?/, "").toLowerCase();
-    }
-    this.selector = selector;
-}
-ElemHideBase.prototype = {
-    __proto__: ActiveFilter.prototype,
-    domainSeparator: ",",
-    ignoreTrailingDot: false,
-    selectorDomain: null,
-    selector: null
-};
-ElemHideBase.fromText = function(text, domain, isException, tagName, attrRules, selector)
-{
-    if (!selector)
-    {
-        if (tagName == "*")
-        {
-            tagName = "";
-        }
-        var id = null;
-        var additional = "";
-        if (attrRules)
-        {
-            attrRules = attrRules.match(/\([\w\-]+(?:[$^*]?=[^\(\)"]*)?\)/g);
-            for (var _loopIndex7 = 0; _loopIndex7 < attrRules.length; ++_loopIndex7)
-            {
-                var rule = attrRules[_loopIndex7];
-                rule = rule.substr(1, rule.length - 2);
-                var separatorPos = rule.indexOf("=");
-                if (separatorPos > 0)
-                {
-                    rule = rule.replace(/=/, "=\"") + "\"";
-                    additional += "[" + rule + "]";
-                }
-                else
-                {
-                    if (id)
-                    {
-                        var Utils = require("utils").Utils;
-                        return new InvalidFilter(text, Utils.getString("filter_elemhide_duplicate_id"));
-                    }
-                    else
-                    {
-                        id = rule;
-                    }
-                }
-            }
-        }
-        if (id)
-        {
-            selector = tagName + "." + id + additional + "," + tagName + "#" + id + additional;
-        }
-        else if (tagName || additional)
-        {
-            selector = tagName + additional;
-        }
-        else
-        {
-            var Utils = require("utils").Utils;
-            return new InvalidFilter(text, Utils.getString("filter_elemhide_nocriteria"));
-        }
-    }
-    if (isException)
-    {
-        return new ElemHideException(text, domain, selector);
-    }
-    else
-    {
-        return new ElemHideFilter(text, domain, selector);
-    }
-};
-
-function ElemHideFilter(text, domains, selector)
-{
-    ElemHideBase.call(this, text, domains, selector);
-}
-ElemHideFilter.prototype = {
-    __proto__: ElemHideBase.prototype
-};
-
-function ElemHideException(text, domains, selector)
-{
-    ElemHideBase.call(this, text, domains, selector);
-}
-ElemHideException.prototype = {
-    __proto__: ElemHideBase.prototype
-};
+extend(WhitelistFilter, RegExpFilter, {
+});
 
 function Matcher()
 {
