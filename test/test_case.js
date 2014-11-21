@@ -19,6 +19,7 @@ console.assert('PROXY' == FindProxyForURL('http://appspot.com/', 'appspot.com'))
 console.assert('PROXY' == FindProxyForURL('http://my.appspot.com/', 'my.appspot.com'));
 
 console.assert('PROXY' == FindProxyForURL('http://www.userdefined.com/', 'www.userdefined.com'));
+console.assert('DIRECT;' == FindProxyForURL('http://userdefined.whitelist.com/', 'userdefined.whitelist.com'));
 
 console.assert('DIRECT;' == FindProxyForURL('http://www.baidu.com', 'www.baidu.com'));
 console.assert('DIRECT;' == FindProxyForURL('http://www.youku.com', 'www.youku.com'));

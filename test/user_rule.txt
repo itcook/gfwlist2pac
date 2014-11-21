@@ -5,3 +5,4 @@
 ||akamai.net
 ||akamaiedge.net
 ||cloudfront.net
+@@userdefined.whitelist.com

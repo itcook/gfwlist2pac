@@ -3843,7 +3843,8 @@ var rules = [
   "||amazonaws.com", 
   "||akamai.net", 
   "||akamaiedge.net", 
-  "||cloudfront.net"
+  "||cloudfront.net", 
+  "@@userdefined.whitelist.com"
 ];
 
 /*
