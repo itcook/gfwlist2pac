@@ -710,4 +710,4 @@ for (var j = 0; j < repeat; j++) {
 
 var diff = process.hrtime(time);
 //console.log('total: ' + (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2) + 'ms');
-console.log('avg: ' + ((diff[0] * 1e3 + diff[1] * 1e-6) * 1e3 / repeat / urls.length).toFixed(2) + 'ns');
+console.log('avg: ' + ((diff[0] * 1e3 + diff[1] * 1e-6) * 1e3 / repeat / urls.length).toFixed(2) + 'us');
