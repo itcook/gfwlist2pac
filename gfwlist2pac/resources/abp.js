@@ -22,6 +22,22 @@ var rules = __RULES__;
 * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+function createDict()
+{
+    var result = {};
+    result.__proto__ = null;
+    return result;
+}
+
+function getOwnPropertyDescriptor(obj, key)
+{
+    if (obj.hasOwnProperty(key))
+    {
+        return obj[key];
+    }
+    return null;
+}
+
 function Filter(text)
 {
     this.text = text;
@@ -30,17 +46,12 @@ function Filter(text)
 Filter.prototype = {
     text: null,
     subscriptions: null,
-    serialize: function(buffer)
-    {
-        buffer.push("[Filter]");
-        buffer.push("text=" + this.text);
-    },
     toString: function()
     {
         return this.text;
     }
 };
-Filter.knownFilters = Object.create(null);
+Filter.knownFilters = createDict();
 Filter.elemhideRegExp = /^([^\/\*\|\@"!]*?)#(\@)?(?:([\w\-]+|\*)((?:\([\w\-]+(?:[$^*]?=[^\(\)"]*)?\))*)|#([^{}]+))$/;
 Filter.regexpRegExp = /^(@@)?\/.*\/(?:\$~?[\w\-]+(?:=[^,\s]+)?(?:,~?[\w\-]+(?:=[^,\s]+)?)*)?$/;
 Filter.optionsRegExp = /\$(~?[\w\-]+(?:=[^,\s]+)?(?:,~?[\w\-]+(?:=[^,\s]+)?)*)$/;
@@ -67,50 +78,6 @@ Filter.fromText = function(text)
     Filter.knownFilters[ret.text] = ret;
     return ret;
 };
-Filter.fromObject = function(obj)
-{
-    var ret = Filter.fromText(obj.text);
-    if (ret instanceof ActiveFilter)
-    {
-        if ("disabled" in obj)
-        {
-            ret._disabled = obj.disabled == "true";
-        }
-        if ("hitCount" in obj)
-        {
-            ret._hitCount = parseInt(obj.hitCount) || 0;
-        }
-        if ("lastHit" in obj)
-        {
-            ret._lastHit = parseInt(obj.lastHit) || 0;
-        }
-    }
-    return ret;
-};
-Filter.normalize = function(text)
-{
-    if (!text)
-    {
-        return text;
-    }
-    text = text.replace(/[^\S ]/g, "");
-    if (/^\s*!/.test(text))
-    {
-        return text.replace(/^\s+/, "").replace(/\s+$/, "");
-    }
-    else if (Filter.elemhideRegExp.test(text))
-    {
-        var _tempVar5 = /^(.*?)(#\@?#?)(.*)$/.exec(text);
-        var domain = _tempVar5[1];
-        var separator = _tempVar5[2];
-        var selector = _tempVar5[3];
-        return domain.replace(/\s/g, "") + separator + selector.replace(/^\s+/, "").replace(/\s+$/, "");
-    }
-    else
-    {
-        return text.replace(/\s/g, "");
-    }
-};
 
 function InvalidFilter(text, reason)
 {
@@ -120,8 +87,6 @@ function InvalidFilter(text, reason)
 InvalidFilter.prototype = {
     __proto__: Filter.prototype,
     reason: null,
-    serialize: function(buffer)
-    {}
 };
 
 function CommentFilter(text)
@@ -130,8 +95,6 @@ function CommentFilter(text)
 }
 CommentFilter.prototype = {
     __proto__: Filter.prototype,
-    serialize: function(buffer)
-    {}
 };
 
 function ActiveFilter(text, domains)
@@ -141,58 +104,17 @@ function ActiveFilter(text, domains)
 }
 ActiveFilter.prototype = {
     __proto__: Filter.prototype,
-    _disabled: false,
-    _hitCount: 0,
-    _lastHit: 0,
-    get disabled()
-    {
-        return this._disabled;
-    },
-    set disabled(value)
-    {
-        if (value != this._disabled)
-        {
-            var oldValue = this._disabled;
-            this._disabled = value;
-        }
-        return this._disabled;
-    },
-    get hitCount()
-    {
-        return this._hitCount;
-    },
-    set hitCount(value)
-    {
-        if (value != this._hitCount)
-        {
-            var oldValue = this._hitCount;
-            this._hitCount = value;
-        }
-        return this._hitCount;
-    },
-    get lastHit()
-    {
-        return this._lastHit;
-    },
-    set lastHit(value)
-    {
-        if (value != this._lastHit)
-        {
-            var oldValue = this._lastHit;
-            this._lastHit = value;
-        }
-        return this._lastHit;
-    },
+
     domainSource: null,
     domainSeparator: null,
     ignoreTrailingDot: true,
     domainSourceIsUpperCase: false,
-    get domains()
+    getDomains: function()
     {
-        var prop = Object.getOwnPropertyDescriptor(this, "domains");
+        var prop = getOwnPropertyDescriptor(this, "domains");
         if (prop)
         {
-            return prop.value;
+            return prop;
         }
         var domains = null;
         if (this.domainSource)
@@ -242,7 +164,7 @@ ActiveFilter.prototype = {
                     }
                     if (!domains)
                     {
-                        domains = Object.create(null);
+                        domains = createDict();
                     }
                     domains[domain] = include;
                 }
@@ -250,27 +172,22 @@ ActiveFilter.prototype = {
             }
             this.domainSource = null;
         }
-        Object.defineProperty(this, "domains",
-            {
-                value: domains,
-                enumerable: true
-            });
         return this.domains;
     },
     sitekeys: null,
     isActiveOnDomain: function(docDomain, sitekey)
     {
-        if (this.sitekeys && (!sitekey || this.sitekeys.indexOf(sitekey.toUpperCase()) < 0))
+        if (this.getSitekeys() && (!sitekey || this.getSitekeys().indexOf(sitekey.toUpperCase()) < 0))
         {
             return false;
         }
-        if (!this.domains)
+        if (!this.getDomains())
         {
             return true;
         }
         if (!docDomain)
         {
-            return this.domains[""];
+            return this.getDomains()[""];
         }
         if (this.ignoreTrailingDot)
         {
@@ -279,7 +196,7 @@ ActiveFilter.prototype = {
         docDomain = docDomain.toUpperCase();
         while (true)
         {
-            if (docDomain in this.domains)
+            if (docDomain in this.getDomains())
             {
                 return this.domains[docDomain];
             }
@@ -294,7 +211,7 @@ ActiveFilter.prototype = {
     },
     isActiveOnlyOnDomain: function(docDomain)
     {
-        if (!docDomain || !this.domains || this.domains[""])
+        if (!docDomain || !this.getDomains() || this.getDomains()[""])
         {
             return false;
         }
@@ -303,7 +220,7 @@ ActiveFilter.prototype = {
             docDomain = docDomain.replace(/\.+$/, "");
         }
         docDomain = docDomain.toUpperCase();
-        for (var domain in this.domains)
+        for (var domain in this.getDomains())
         {
             if (this.domains[domain] && domain != docDomain && (domain.length <= docDomain.length || domain.indexOf("." + docDomain) != domain.length - docDomain.length - 1))
             {
@@ -311,25 +228,6 @@ ActiveFilter.prototype = {
             }
         }
         return true;
-    },
-    serialize: function(buffer)
-    {
-        if (this._disabled || this._hitCount || this._lastHit)
-        {
-            Filter.prototype.serialize.call(this, buffer);
-            if (this._disabled)
-            {
-                buffer.push("disabled=true");
-            }
-            if (this._hitCount)
-            {
-                buffer.push("hitCount=" + this._hitCount);
-            }
-            if (this._lastHit)
-            {
-                buffer.push("lastHit=" + this._lastHit);
-            }
-        }
     }
 };
 
@@ -355,10 +253,7 @@ function RegExpFilter(text, regexpSource, contentType, matchCase, domains, third
     if (regexpSource.length >= 2 && regexpSource[0] == "/" && regexpSource[regexpSource.length - 1] == "/")
     {
         var regexp = new RegExp(regexpSource.substr(1, regexpSource.length - 2), this.matchCase ? "" : "i");
-        Object.defineProperty(this, "regexp",
-            {
-                value: regexp
-            });
+        this.regexp = regexp;
     }
     else
     {
@@ -371,31 +266,28 @@ RegExpFilter.prototype = {
     length: 1,
     domainSeparator: "|",
     regexpSource: null,
-    get regexp()
+    getRegexp: function()
     {
-        var prop = Object.getOwnPropertyDescriptor(this, "regexp");
+        var prop = getOwnPropertyDescriptor(this, "regexp");
         if (prop)
         {
-            return prop.value;
+            return prop;
         }
         var source = this.regexpSource.replace(/\*+/g, "*").replace(/\^\|$/, "^").replace(/\W/g, "\\$&").replace(/\\\*/g, ".*").replace(/\\\^/g, "(?:[\\x00-\\x24\\x26-\\x2C\\x2F\\x3A-\\x40\\x5B-\\x5E\\x60\\x7B-\\x7F]|$)").replace(/^\\\|\\\|/, "^[\\w\\-]+:\\/+(?!\\/)(?:[^\\/]+\\.)?").replace(/^\\\|/, "^").replace(/\\\|$/, "$").replace(/^(\.\*)/, "").replace(/(\.\*)$/, "");
         var regexp = new RegExp(source, this.matchCase ? "" : "i");
-        Object.defineProperty(this, "regexp",
-            {
-                value: regexp
-            });
+        this.regexp = regexp;
         return regexp;
     },
     contentType: 2147483647,
     matchCase: false,
     thirdParty: null,
     sitekeySource: null,
-    get sitekeys()
+    getSitekeys: function()
     {
-        var prop = Object.getOwnPropertyDescriptor(this, "sitekeys");
+        var prop = getOwnPropertyDescriptor(this, "sitekeys");
         if (prop)
         {
-            return prop.value;
+            return prop;
         }
         var sitekeys = null;
         if (this.sitekeySource)
@@ -403,29 +295,19 @@ RegExpFilter.prototype = {
             sitekeys = this.sitekeySource.split("|");
             this.sitekeySource = null;
         }
-        Object.defineProperty(this, "sitekeys",
-            {
-                value: sitekeys,
-                enumerable: true
-            });
+        this.sitekeys = sitekeys;
         return this.sitekeys;
     },
     matches: function(location, contentType, docDomain, thirdParty, sitekey)
     {
-        if (this.regexp.test(location) && this.isActiveOnDomain(docDomain, sitekey))
+        if (this.getRegexp().test(location) && this.isActiveOnDomain(docDomain, sitekey))
         {
             return true;
         }
         return false;
     }
 };
-Object.defineProperty(RegExpFilter.prototype, "0",
-    {
-        get: function()
-        {
-            return this;
-        }
-    });
+RegExpFilter.prototype["0"] = "#this";
 RegExpFilter.fromText = function(text)
 {
     var blocking = true;
@@ -677,8 +559,8 @@ Matcher.prototype = {
     keywordByFilter: null,
     clear: function()
     {
-        this.filterByKeyword = Object.create(null);
-        this.keywordByFilter = Object.create(null);
+        this.filterByKeyword = createDict();
+        this.keywordByFilter = createDict();
     },
     add: function(filter)
     {
@@ -787,6 +669,10 @@ Matcher.prototype = {
         for (var i = 0; i < list.length; i++)
         {
             var filter = list[i];
+            if (filter == "#this")
+            {
+                filter = list;
+            }
             if (filter.matches(location, contentType, docDomain, thirdParty, sitekey))
             {
                 return filter;
@@ -822,7 +708,7 @@ function CombinedMatcher()
 {
     this.blacklist = new Matcher();
     this.whitelist = new Matcher();
-    this.resultCache = Object.create(null);
+    this.resultCache = createDict();
 }
 CombinedMatcher.maxCacheEntries = 1000;
 CombinedMatcher.prototype = {
@@ -834,7 +720,7 @@ CombinedMatcher.prototype = {
     {
         this.blacklist.clear();
         this.whitelist.clear();
-        this.resultCache = Object.create(null);
+        this.resultCache = createDict();
         this.cacheEntries = 0;
     },
     add: function(filter)
@@ -849,7 +735,7 @@ CombinedMatcher.prototype = {
         }
         if (this.cacheEntries > 0)
         {
-            this.resultCache = Object.create(null);
+            this.resultCache = createDict();
             this.cacheEntries = 0;
         }
     },
@@ -865,7 +751,7 @@ CombinedMatcher.prototype = {
         }
         if (this.cacheEntries > 0)
         {
-            this.resultCache = Object.create(null);
+            this.resultCache = createDict();
             this.cacheEntries = 0;
         }
     },
@@ -951,7 +837,7 @@ CombinedMatcher.prototype = {
         var result = this.matchesAnyInternal(location, 0, docDomain, null, null);
         if (this.cacheEntries >= CombinedMatcher.maxCacheEntries)
         {
-            this.resultCache = Object.create(null);
+            this.resultCache = createDict();
             this.cacheEntries = 0;
         }
         this.resultCache[key] = result;
