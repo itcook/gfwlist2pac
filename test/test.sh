@@ -8,11 +8,9 @@ cat test/gfwlist.txt | base64 -d | PYTHONPATH=. coverage run -a gfwlist2pac/main
 PYTHONPATH=. coverage run -a gfwlist2pac/main.py --precise -i test/gfwlist.txt -f test/proxy_abp.pac -p 'SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080; DIRECT;' --user-rule test/user_rule.txt && \
 diff test/proxy.pac test/proxy_nobase64.pac && \
 popd && \
-cat proxy.pac && \
 cat proxy.pac test_case.js > /tmp/test.js && \
 node /tmp/test.js && \
-cat proxy_abp.pac && \
 cat proxy_abp.pac test_case.js > /tmp/test.js && \
 node /tmp/test.js && \
-cd .. && coverage report --include=* -m && \
+cd .. && coverage report --include=gfwlist2pac/* -m && \
 echo 'Test passed'
