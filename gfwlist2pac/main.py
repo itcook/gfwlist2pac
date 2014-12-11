@@ -37,7 +37,7 @@ def decode_gfwlist(content):
     # decode base64 if have to
     try:
         if '.' in content:
-            raise
+            raise Exception()
         return content.decode('base64')
     except:
         return content
@@ -58,12 +58,7 @@ def get_hostname(something):
 def add_domain_to_set(s, something):
     hostname = get_hostname(something)
     if hostname is not None:
-        if hostname.startswith('.'):
-            hostname = hostname.lstrip('.')
-        if hostname.endswith('/'):
-            hostname = hostname.rstrip('/')
-        if hostname:
-            s.add(hostname)
+        s.add(hostname)
 
 
 def combine_lists(content, user_rule=None):

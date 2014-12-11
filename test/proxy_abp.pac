@@ -3844,6 +3844,7 @@ var rules = [
   "||akamai.net", 
   "||akamaiedge.net", 
   "||cloudfront.net", 
+  "http://[incomplete_ipv6_addr/", 
   "@@userdefined.whitelist.com"
 ];
 
