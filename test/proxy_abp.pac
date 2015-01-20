@@ -3862,7 +3862,7 @@ Filter.fromText = function(text)
         return Filter.knownFilters[text];
     }
     var ret;
-    if (text[0] == "!")
+    if (text.charAt(0) == "!")
     {
         ret = new CommentFilter(text);
     }
@@ -3916,7 +3916,7 @@ extend(ActiveFilter, Filter, {
                 source = source.toUpperCase();
             }
             var list = source.split(this.domainSeparator);
-            if (list.length == 1 && list[0][0] != "~")
+            if (list.length == 1 && list[0].charAt(0) != "~")
             {
                 domains = createDict();
                 domains[""] = false;
@@ -3941,7 +3941,7 @@ extend(ActiveFilter, Filter, {
                         continue;
                     }
                     var include;
-                    if (domain[0] == "~")
+                    if (domain.charAt(0) == "~")
                     {
                         include = false;
                         domain = domain.substr(1);
@@ -4039,7 +4039,7 @@ function RegExpFilter(text, regexpSource, contentType, matchCase, domains, third
     {
         this.sitekeySource = sitekeys;
     }
-    if (regexpSource.length >= 2 && regexpSource[0] == "/" && regexpSource[regexpSource.length - 1] == "/")
+    if (regexpSource.length >= 2 && regexpSource.charAt(0) == "/" && regexpSource.charAt(regexpSource.length - 1) == "/")
     {
         var regexp = new RegExp(regexpSource.substr(1, regexpSource.length - 2), this.matchCase ? "" : "i");
         this.regexp = regexp;
@@ -4136,7 +4136,7 @@ RegExpFilter.fromText = function(text)
                 }
                 contentType |= RegExpFilter.typeMap[option];
             }
-            else if (option[0] == "~" && option.substr(1) in RegExpFilter.typeMap)
+            else if (option.charAt(0) == "~" && option.substr(1) in RegExpFilter.typeMap)
             {
                 if (contentType == null)
                 {
