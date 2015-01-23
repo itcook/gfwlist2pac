@@ -2,7 +2,7 @@ Notice
 ------
 
 This project does not maintain a list. It's just a tool that converts
-GFWList into PAC.
+GFWList into PAC. Please report issues about the list to GFWList.
 
 Pull Requests
 -------------
