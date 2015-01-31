@@ -117,17 +117,15 @@ def reduce_domains(domains):
                 break
         if last_root_domain is not None:
             new_domains.add(last_root_domain)
-    
+
     uni_domains = set()
     for domain in new_domains:
         domain_parts = domain.split('.')
-        duplicated = False
         for i in xrange(0, len(domain_parts)-1):
             root_domain = '.'.join(domain_parts[len(domain_parts) - i - 1:])
             if domains.__contains__(root_domain):
-                duplicated = True
                 break
-        if not duplicated:
+        else:
             uni_domains.add(domain)
     return uni_domains
 
@@ -139,8 +137,9 @@ def generate_pac_fast(domains, proxy):
     for domain in domains:
         domains_dict[domain] = 1
     proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
-    proxy_content = proxy_content.replace('__DOMAINS__',
-                                          json.dumps(domains_dict, indent=2, sort_keys=True))
+    proxy_content = proxy_content.replace(
+                        '__DOMAINS__',
+                        json.dumps(domains_dict, indent=2, sort_keys=True))
     return proxy_content
 
 
