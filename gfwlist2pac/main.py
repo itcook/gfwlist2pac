@@ -138,8 +138,9 @@ def generate_pac_fast(domains, proxy):
         domains_dict[domain] = 1
     proxy_content = proxy_content.replace('__PROXY__', json.dumps(str(proxy)))
     proxy_content = proxy_content.replace(
-                        '__DOMAINS__',
-                        json.dumps(domains_dict, indent=2, sort_keys=True))
+        '__DOMAINS__',
+        json.dumps(domains_dict, indent=2, sort_keys=True)
+    )
     return proxy_content
 
 
