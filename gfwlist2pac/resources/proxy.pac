@@ -12,15 +12,14 @@ var hasOwnProperty = Object.hasOwnProperty;
 function FindProxyForURL(url, host) {
     var suffix;
     var pos = host.lastIndexOf('.');
-    while(1) {
+    for (;;) {
         suffix = host.substring(pos + 1);
         if (hasOwnProperty.call(domains, suffix)) {
             return proxy;
         }
         if (pos <= 0) {
-            break;
+            return direct;
         }
         pos = host.lastIndexOf('.', pos - 1);
     }
-    return direct;
 }
