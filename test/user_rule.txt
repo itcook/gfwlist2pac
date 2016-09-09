@@ -1,0 +1,9 @@
+!this is a user defined rule
+||userdefined.com
+||www.userdefined2.com
+||amazonaws.com
+||akamai.net
+||akamaiedge.net
+||cloudfront.net
+http://[incomplete_ipv6_addr/
+@@userdefined.whitelist.com
