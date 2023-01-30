@@ -142,6 +142,7 @@ og.ao
 co.ao
 pb.ao
 it.ao
+app
 aq
 ar
 com.ar
